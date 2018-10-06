@@ -3,10 +3,12 @@
 #
 
 import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA, KernelPCA
 
 from sklearn.datasets import make_moons
 from numpy import ones, exp, loadtxt, tanh
 from numpy.linalg import eig, norm
+from sklearn.preprocessing import normalize, scale
 
 VERBOSE = False
 def __DEBUG(msg):
@@ -83,9 +85,9 @@ def kpca(A, kernel, Y):
 if __name__ == "__main__":
 	from numpy import array
 	#VERBOSE = True
-	readfile = False
+	readfile = True
 	if readfile:
-		data = loadtxt("C:\\Users\\Muaz\\Desktop\\Advanced_ML_practical_M2_MLDM\\data.data")
+		data = loadtxt("C:\\Users\\Muaz\\Desktop\\Advanced Machine Learning\\Advanced_ML_practical_M2_MLDM\\data.data")
 		#__DEBUG("data : \n" + str(data))
 		d = data.shape[1]
 		A = data[:,0:(d-1)]
@@ -109,22 +111,16 @@ if __name__ == "__main__":
 	
 	sigma_array = [0.0001,0.001,0.01,0.1,1,10,100]
 	cc = 3
-	for sigma in sigma_array:
-		        
-		K2_SIGMA = sigma
-		A_new = kpca(A, gaussian_kernel,Y)
-		plt.figure(cc, figsize=(8, 6))
-		plt.clf()
-		plt.scatter(A_new[:, 0], A_new[:, 1], c=Y,s=25, edgecolor='k')
-		cc = cc + 1
-		
-	for alpha in alpha_array:
-		for c in constant_array:
-			K3_alpha = alpha
-			K3_constatnt = c
-			A_new = kpca(A, sigmoid_kernel,Y)
-			plt.figure(cc, figsize=(8, 6))
-			plt.clf()
-			plt.scatter(A_new[:, 0], A_new[:, 1], c=Y,s=25, edgecolor='k')
-			cc = cc + 1
+    
+
+	#norm_A = normalize(A, norm='l2', copy=True, return_norm=False)
+	norm_A = scale(A)
+    
+	kpca = KernelPCA(n_components=2, kernel='poly',degree =2,coef0 = 1) 
+	A_new = kpca.fit_transform(norm_A)
+
+	print("coco")
+	plt.figure(3, figsize=(8, 6))
+	plt.clf()
+	plt.scatter(A_new[:, 0], A_new[:, 1], c=Y,s=25, edgecolor='k')
     
