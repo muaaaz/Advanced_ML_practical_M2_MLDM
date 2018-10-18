@@ -71,9 +71,9 @@ def k_fit(X, y, learn_rate=0.01, num_iter=100000):
     return theta
 
 def k_predict(X, train, theta, threshold=0.5):
-    kvec = compute_kmat2(X, train)
-    kvec = add_ones_feature(kvec)
-    return sigmoid(np.dot(kvec, theta)) >= threshold
+    kmat = compute_kmat2(X, train)
+    kmat = add_ones_feature(kmat)
+    return sigmoid(np.dot(kmat, theta)) >= threshold
 
 if __name__ == '__main__':
     data = np.genfromtxt('data2.data', delimiter=' ')
