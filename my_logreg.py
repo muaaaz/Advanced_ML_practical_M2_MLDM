@@ -23,7 +23,7 @@ def fit(X, y, learn_rate=0.01, num_iter=100000):
         gradient = np.dot(X.T, (h - y)) / m
         theta -= learn_rate * gradient
 
-        if iteration % (int(num_iter / 10)) == 0:
+        if iteration % (num_iter // 10) == 0:
             print(f'loss: {loss(h, y)}')
 
     return theta
@@ -40,7 +40,7 @@ def compute_kmat(X):
     m = X.shape[0]
     kmat = np.zeros((m, m))
     for i in range(m):
-        for j in range(int(m/2) + 1):
+        for j in range(m//2 + 1):
             kmat[i, j] = kmat[j, i] = rbf_kernel(X[i], X[j])
     return kmat
 
@@ -65,7 +65,7 @@ def k_fit(X, y, learn_rate=0.01, num_iter=100000):
         gradient = np.dot(kmat.T, (h - y)) / m
         theta -= learn_rate * gradient
 
-        if iteration % (int(num_iter / 10)) == 0:
+        if iteration % (num_iter // 10) == 0:
             print(f'loss: {loss(h, y)}')
 
     return theta
