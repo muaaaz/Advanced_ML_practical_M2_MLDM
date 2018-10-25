@@ -77,13 +77,19 @@ def k_predict(X, train, theta, threshold=0.5):
 
 if __name__ == '__main__':
     data = np.genfromtxt('data2.data', delimiter=' ')
-    X = data[:,:2]
-    y = data[:,2]
+    np.random.shuffle(data)
+    train_size = len(data) * 60 // 100
+    X_train = data[:train_size,:2]
+    y_train = data[:train_size,2]
+    X_test = data[train_size:,:2]
+    y_test = data[train_size:,2]
 
-    theta = fit(X, y)
-    p = predict(X, theta)
-    print(f'accuracy: {int((p == y).mean() * 100)}%')
+    theta = fit(X_train, y_train)
+    p = predict(X_test, theta)
+    print(f'accuracy: {int((p == y_test).mean() * 100)}%')
 
-    theta = k_fit(X, y)
-    p = k_predict(X, X, theta)
-    print(f'accuracy: {int((p == y).mean() * 100)}%')
+    theta = k_fit(X_train, y_train)
+    p = k_predict(X_test, X_train, theta)
+    
+    print(f'accuracy: {int((p == y_test).mean() * 100)}%')
+
