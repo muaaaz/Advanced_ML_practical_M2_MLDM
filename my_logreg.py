@@ -28,6 +28,25 @@ def fit(X, y, learn_rate=0.01, num_iter=100000):
 
     return theta
 
+def fit_stochastic(X, y, learn_rate=0.01, num_iter=100000):
+    X = add_ones_feature(X)
+    m = X.shape[0]
+    d = X.shape[1]
+    theta = np.zeros(d)
+
+    num_iter = num_iter // m
+    for iteration in range(num_iter):
+        for i in range(m):
+            h = sigmoid(np.dot(X, theta))
+            gradient = np.dot(X[i].T, (h[i] - y[i])) / m
+            theta -= learn_rate * gradient
+
+        if iteration % (num_iter // 10) == 0:
+            print(f'loss: {loss(h, y)}')
+
+    return theta
+
+
 def predict(X, theta, threshold=0.5):
     X = add_ones_feature(X)
     return sigmoid(np.dot(X, theta)) >= threshold
@@ -94,14 +113,11 @@ def k_fit_stochastic(X, y, learn_rate=0.01, num_iter=100000, kernel=rbf_kernel):
 
     return theta
 
-
-
-
-
 def k_predict(X, train, theta, threshold=0.5, kernel=rbf_kernel):
     kmat = compute_kmat2(X, train, kernel)
     kmat = add_ones_feature(kmat)
     return sigmoid(np.dot(kmat, theta)) >= threshold
+
 
 if __name__ == '__main__':
     data = np.genfromtxt('data2.data', delimiter=' ')
@@ -118,6 +134,10 @@ if __name__ == '__main__':
 
     theta = k_fit(X_train, y_train)
     p = k_predict(X_test, X_train, theta)
+    print(f'accuracy: {int((p == y_test).mean() * 100)}%')
+
+    theta = fit_stochastic(X_train, y_train)
+    p = predict(X_test, theta)
     print(f'accuracy: {int((p == y_test).mean() * 100)}%')
 
     theta = k_fit_stochastic(X_train, y_train)
