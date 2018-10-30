@@ -76,12 +76,13 @@ def k_fit(X, y, learn_rate=0.01, num_iter=100000, kernel=rbf_kernel):
 
     return theta
 
-def k_fit_stochastic(X, y, learn_rate=0.01, num_iter=10000, kernel=rbf_kernel):
+def k_fit_stochastic(X, y, learn_rate=0.01, num_iter=100000, kernel=rbf_kernel):
     kmat = compute_kmat(X, kernel)
     kmat = add_ones_feature(kmat)
     m = kmat.shape[0]
     d = kmat.shape[1]
     theta = np.zeros(d)
+    num_iter = num_iter // m # 2 for loops
     for iteration in range(num_iter):
         for i in range(m):
             h = sigmoid(np.dot(kmat, theta))
@@ -119,6 +120,6 @@ if __name__ == '__main__':
     p = k_predict(X_test, X_train, theta)
     print(f'accuracy: {int((p == y_test).mean() * 100)}%')
 
-    theta = k_fit_stochastic(X_train, y_train, num_iter=5000)
+    theta = k_fit_stochastic(X_train, y_train)
     p = k_predict(X_test, X_train, theta)
     print(f'accuracy: {int((p == y_test).mean() * 100)}%')
