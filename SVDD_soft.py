@@ -55,7 +55,7 @@ def run(X,Y,kernel):
     C3 = [i/10 for i in range(1,5)]
 
     C_arr = C0 + C1 + C2 + C3
-
+    global cc
     for C in C_arr:
         #print('.',end='')
         cc += 1
