@@ -48,7 +48,13 @@ def run(X,Y,kernel):
     best_accuracy = 0
     best_C = 0
     best_colors = []
-    C_arr = [i/1000 for i in range(1,350)]
+
+    C0 = [i/10000 for i in range(1,10)]
+    C1 = [i/1000 for i in range(1,10)]
+    C2 = [i/100 for i in range(1,10)]
+    C3 = [i/10 for i in range(1,5)]
+
+    C_arr = C0 + C1 + C2 + C3
 
     for C in C_arr:
         #print('.',end='')
@@ -86,9 +92,9 @@ def run(X,Y,kernel):
 
 from sklearn.datasets import make_moons
 
-X,Y = make_moons(n_samples=10, shuffle=False, noise=.05, random_state=0)
-#X = X[0:30,:]
-#Y = Y[:30]
+X,Y = make_moons(n_samples=50, shuffle=False, noise=.05, random_state=0)
+X = X[0:30,:]
+Y = Y[:30]
 print(Y)
 
 #plt.figure(0, figsize=(8,6))
@@ -102,7 +108,13 @@ total_C = 0
 total_sigma = 0
 from scipy.spatial.distance import pdist, squareform
 
-SIGMA_arr = [i/100 for i in range(1,1000)]
+S0 = [i/10000 for i in range(1,10)]
+S1 = [i/1000 for i in range(1,10)]
+S2 = [i/100 for i in range(1,10)]
+S3 = [i/10 for i in range(1,10)]
+S4 = [i for i in range(1,10)]
+SIGMA_arr = S0 + S1 + S2 + S3 + S4
+
 ii = 0
 for sg in SIGMA_arr:
     if ii % 10 == 0:
