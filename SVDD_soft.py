@@ -48,7 +48,7 @@ def run(X,Y,kernel):
     best_accuracy = 0
     best_C = 0
     best_colors = []
-    C_arr = [i/1000 for i in range(1,10)]
+    C_arr = [i/1000 for i in range(1,350)]
 
     for C in C_arr:
         #print('.',end='')
