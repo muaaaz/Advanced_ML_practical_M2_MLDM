@@ -10,7 +10,7 @@ SIGMA = 0.01
 def linear(X,Y):
     #no kernel 
     return np.dot(X,Y)
-
+cc = 0
 # gaussian_kernel(X,Y):
 kernel_arr = [[1,2],[3,4]]
 
@@ -58,6 +58,7 @@ def run(X,Y,kernel):
 
     for C in C_arr:
         #print('.',end='')
+        cc += 1
         sys.stdout.flush()
         x0 = [0 for _ in range(n)] # initial solution
         # solve for alphas
@@ -97,10 +98,10 @@ X = X[0:30,:]
 Y = Y[:30]
 print(Y)
 
-#plt.figure(0, figsize=(8,6))
-#plt.clf()
-#plt.scatter(X[:,0], X[:,1], c=Y , s=25, edgecolor='k')
-#plt.show()
+plt.figure(0, figsize=(8,6))
+plt.clf()
+plt.scatter(X[:,0], X[:,1], c=Y , s=25, edgecolor='k')
+plt.show()
 
 total_accuracy = -5
 total_colors = [] 
@@ -138,6 +139,7 @@ print("best acc: ",total_accuracy)
 print("colores:",total_colors)
 print("total_C",total_C)
 print("total_sigma",total_sigma)
+print("cc",cc)
 #plt.figure(0, figsize=(8,6))
 #plt.clf()
 #plt.scatter(X[:,0], X[:,1], c=total_colors , s=25, edgecolor='k')
