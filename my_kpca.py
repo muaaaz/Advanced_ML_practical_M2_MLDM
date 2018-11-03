@@ -3,28 +3,28 @@
 #
 
 import matplotlib.pyplot as plt
-from sklearn.decomposition import PCA, KernelPCA
-
 from sklearn.datasets import make_moons
 from numpy import ones, exp, loadtxt, tanh
 from numpy.linalg import eig, norm
 from sklearn.preprocessing import normalize, scale
+import numpy as np
 
 VERBOSE = False
 def __DEBUG(msg):
 	if VERBOSE: print(msg)
 
+fig = 1
 K2_SIGMA = 0.007
-K3_alpha = 2
-K3_constatnt = 1
+
+def liner_kernel(X,Y):
+	return np.dot(X,Y)
+
 def polynomial_kernel(X, Y):
 	return (X.T.dot(Y) + 1) ** 2
 
 def gaussian_kernel(X, Y):
 	return exp( (-1 * (norm(X - Y) ** 2)) / (2 * (K2_SIGMA ** 2)) )
 
-def sigmoid_kernel(X, Y):
-	return tanh(K3_alpha*X.T.dot(Y) + K3_constatnt)
 def k_matrix(A, kernel):
 
 	n = A.shape[0]
@@ -41,20 +41,14 @@ def k_matrix(A, kernel):
 	for i in range(n):
 		for j in range(n):
 			K_[i, j] = K[i, j] - K_SUMROWS[i] - K_SUMROWS[j] + K_SUM
-	
-	#ONE_OVER_N = ones((d, d)) / n	
-	#C_COV = COV - 2 * ONE_OVER_N.dot(COV) + ONE_OVER_N.dot(COV.dot(ONE_OVER_N)) 	
-	
+		
 	return K_
 	
-def kpca(A, kernel, Y):
-
+def kpca(A, kernel):
 	n = A.shape[0]
 	d = A.shape[1]
-	#__DEBUG("A = " + str(A))	
 	# calculate the kernelized matrix of data
 	K = k_matrix(A, kernel)
-	#__DEBUG("K = " + str(K))
 	# check if the matrix is centralized around zero
 	#__DEBUG("sum K = " + str(K.sum()) ) # the sum should be zero!
 	
@@ -63,8 +57,6 @@ def kpca(A, kernel, Y):
 	idx = eig_values.argsort()[::-1]   
 	eig_values = eig_values[idx]
 	eig_vectors = eig_vectors[:,idx]
-	#__DEBUG("eig_values  = \n" +  str(eig_values))
-	#__DEBUG("eig_vectors = \n" +  str(eig_vectors))
 	
 	# project data (only the first d component) d: the number of features in the original space
 	sub_eig_vectors = eig_vectors[0:d,:]
@@ -73,54 +65,47 @@ def kpca(A, kernel, Y):
 	A_new = ones((n,d))
 	for i in range(n):
 		for j in range(d):
-			coco = 0
+			temp = 0
 			for z in range(n):
-				coco = coco + eig_vectors[j,z]*kernel(A[i],A[z])
-			A_new[i,j] = coco
+				temp += eig_vectors[j,z]*kernel(A[i],A[z])
+			A_new[i,j] = temp
 			
 	#__DEBUG("A_new = \n" + str(A_new))
 	return A_new
 
-	
-if __name__ == "__main__":
-	from numpy import array
-	#VERBOSE = True
-	readfile = True
-	if readfile:
-		data = loadtxt("C:\\Users\\Muaz\\Desktop\\Advanced Machine Learning\\Advanced_ML_practical_M2_MLDM\\data.data")
-		#__DEBUG("data : \n" + str(data))
-		d = data.shape[1]
-		A = data[:,0:(d-1)]
-		Y = data[:,(d-1):d].T[0]
-	else:
-		A, Y = make_moons(n_samples=100, noise=0.1)
-        
-	plt.figure(1, figsize=(8, 6))
-	plt.clf()
-	plt.scatter(A[:, 0], A[:, 1], c=Y,s=25, edgecolor='k')
-	#__DEBUG("A : \n" + str(A))
-	#__DEBUG("Y : \n" + str(Y))
 
-	A_new = kpca(A, polynomial_kernel,Y)
-	plt.figure(2, figsize=(8, 6))
+from numpy import array
+#VERBOSE = True
+
+data = loadtxt("data.data")
+#__DEBUG("data : \n" + str(data))
+d = data.shape[1]
+A = data[:,0:(d-1)]
+Y = data[:,(d-1):d].T[0]
+	
+plt.figure(fig, figsize=(8, 6))
+plt.clf()
+plt.scatter(A[:, 0], A[:, 1], c=Y,s=25, edgecolor='k')
+plt.show()
+fig += 1
+
+A_new = kpca(A, polynomial_kernel)
+plt.figure(fig, figsize=(8, 6))
+plt.clf()
+plt.scatter(A_new[:, 0], A_new[:, 1], c=Y,s=25, edgecolor='k')
+plt.show()
+fig += 1
+
+sigma_array = [0.09,0.01,0.1,0.3,0.5,1,2]
+
+for sg in sigma_array:
+	K2_SIGMA = sg
+	A_new = kpca(A, gaussian_kernel)
+	plt.figure(fig, figsize=(8, 6))
 	plt.clf()
 	plt.scatter(A_new[:, 0], A_new[:, 1], c=Y,s=25, edgecolor='k')
+	plt.show()
+	fig += 1
 
-	alpha_array = [0.001,0.01,1,100]
-	constant_array = [0.001,0.01,1,100]
-	
-	sigma_array = [0.0001,0.001,0.01,0.1,1,10,100]
-	cc = 3
-    
 
-	#norm_A = normalize(A, norm='l2', copy=True, return_norm=False)
-	norm_A = scale(A)
-    
-	kpca = KernelPCA(n_components=2, kernel='poly',degree =2,coef0 = 1) 
-	A_new = kpca.fit_transform(norm_A)
 
-	print("coco")
-	plt.figure(3, figsize=(8, 6))
-	plt.clf()
-	plt.scatter(A_new[:, 0], A_new[:, 1], c=Y,s=25, edgecolor='k')
-    

@@ -15,7 +15,7 @@ int main(int argc, char** argv) {
 			double alpha = double(rand()%360)/360 * 2*M_PI;
 
 			double x = cos(alpha) * l ,y = sin(alpha) * l ;
-			cout<<x<<' '<<y<<' '<<i<<endl;
+			cout<<x<<' '<<y<<endl;
 		} 
 	}		
     return 0;

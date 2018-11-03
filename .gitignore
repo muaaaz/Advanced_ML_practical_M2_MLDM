@@ -10,7 +10,9 @@
 *.so
 *.dll
 *.dylib
-
+*.png
+*.tex
+*.ipynb
 # Qt-es
 
 /.qmake.cache
