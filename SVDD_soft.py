@@ -17,8 +17,10 @@ kernel_arr = [[1,2],[3,4]]
 def polynomial(X,Y):
     return (X.T.dot(Y) + 1) ** 2
 
+def rbf_kernel(v1, v2, sigma=1.0):
+    return np.exp((-1 * np.linalg.norm(v1 - v2) ** 2) / (2 * sigma ** 2))
+
 def run(X,Y,kernel):
-    
     
     n = X.shape[0] # number of entries
     m = X.shape[1] # number of features
@@ -27,19 +29,19 @@ def run(X,Y,kernel):
     def L(a,*args):
         ret = 0
         for i in range(len(a)):
-            ret += a[i]*kernel_arr[i,i]
+            ret += a[i]*kernel(X[i],X[i])
         for i in range(len(a)):
             for j in range(len(a)):
-                ret -= a[i]*a[j]*kernel_arr[i,j]
+                ret -= a[i]*a[j]*kernel(X[i],X[j])
         return -1 * ret # we add -1 because we want to mazimize the function instead of minimizing
 
     # partial derivative of L regarding the alphas
     def dL(a,*args):
         da = np.zeros(len(a))
         for i in range(len(a)):
-            da[i] = kernel_arr[i,i]
+            da[i] = kernel(X[i],X[i])
             for j in range(len(a)):
-                da[i] -= a[j]*kernel_arr[i,j]
+                da[i] -= a[j]*kernel(X[i],X[j])
         return -1 * np.array( da ,float) # we add -1 because we want to mazimize the function instead of minimizing
 
     import scipy.optimize as optimize
@@ -55,9 +57,11 @@ def run(X,Y,kernel):
     C3 = [i/10 for i in range(1,5)]
 
     C_arr = C0 + C1 + C2 + C3
+    C_arr = C2 + C3
+
     global cc
     for C in C_arr:
-        #print('.',end='')
+        print('.',end='')
         cc += 1
         sys.stdout.flush()
         x0 = [0 for _ in range(n)] # initial solution
@@ -93,15 +97,16 @@ def run(X,Y,kernel):
 
 from sklearn.datasets import make_moons
 
-X,Y = make_moons(n_samples=50, shuffle=False, noise=.05, random_state=0)
-X = X[0:30,:]
-Y = Y[:30]
+X,Y = make_moons(n_samples=200, shuffle=False, noise=.05, random_state=0)
+X = X[0:110,:]
+Y = Y[:110]
 print(Y)
 
 plt.figure(0, figsize=(8,6))
 plt.clf()
 plt.scatter(X[:,0], X[:,1], c=Y , s=25, edgecolor='k')
 plt.show()
+
 
 total_accuracy = -5
 total_colors = [] 
@@ -115,6 +120,7 @@ S2 = [i/100 for i in range(1,10)]
 S3 = [i/10 for i in range(1,10)]
 S4 = [i for i in range(1,10)]
 SIGMA_arr = S0 + S1 + S2 + S3 + S4
+SIGMA_arr = [1]
 
 ii = 0
 for sg in SIGMA_arr:
@@ -126,7 +132,7 @@ for sg in SIGMA_arr:
     kernel_arr = np.exp(-pairwise_sq_dists / sg**2)
     #print()
     #SIGMA = sg
-    accuracy,colors,C = run(X,Y,linear)
+    accuracy,colors,C = run(X,Y,rbf_kernel)
     #print(accuracy,colors,C)
     #print(kernel_arr)
     if accuracy > total_accuracy:
