@@ -1,5 +1,6 @@
 
 import numpy as np
+from time import time
 
 def sigmoid(z):
     return 1 / (1 + np.exp(-z))
@@ -101,7 +102,7 @@ def k_fit_stochastic(X, y, learn_rate=0.01, num_iter=100000, kernel=rbf_kernel):
     m = kmat.shape[0]
     d = kmat.shape[1]
     theta = np.zeros(d)
-    num_iter = num_iter // m # 2 for loops
+    num_iter = num_iter // m # performance enhancement
     for iteration in range(num_iter):
         for i in range(m):
             h = sigmoid(np.dot(kmat, theta))
@@ -128,18 +129,30 @@ if __name__ == '__main__':
     X_test = data[train_size:,:2]
     y_test = data[train_size:,2]
 
+    print("logistic regression")
+    start = time()
     theta = fit(X_train, y_train)
     p = predict(X_test, theta)
     print(f'accuracy: {int((p == y_test).mean() * 100)}%')
+    print(f'execution time: {time() - start} sec')
 
+    print("\nkernelized logistic regression")
+    start = time()
     theta = k_fit(X_train, y_train)
     p = k_predict(X_test, X_train, theta)
     print(f'accuracy: {int((p == y_test).mean() * 100)}%')
+    print(f'execution time: {time() - start} sec')
 
+    print("\nlogistic regression (stochastic GD)")
+    start = time()
     theta = fit_stochastic(X_train, y_train)
     p = predict(X_test, theta)
     print(f'accuracy: {int((p == y_test).mean() * 100)}%')
+    print(f'execution time: {time() - start} sec')
 
+    print("\nkernelized logistic regression (stochastic GD)")
+    start = time()
     theta = k_fit_stochastic(X_train, y_train)
     p = k_predict(X_test, X_train, theta)
     print(f'accuracy: {int((p == y_test).mean() * 100)}%')
+    print(f'execution time: {time() - start} sec')
